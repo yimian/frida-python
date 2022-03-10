@@ -17,8 +17,8 @@ async function start() {
   });
   let peerBus: dbus.MessageBus | null = null;
 
-  const authServiceObj = await bus.getProxyObject('re.frida.AuthenticationService15', '/re/frida/AuthenticationService');
-  const authService = authServiceObj.getInterface('re.frida.AuthenticationService15');
+  const authServiceObj = await bus.getProxyObject('os.monda.AuthenticationService15', '/os/monda/AuthenticationService');
+  const authService = authServiceObj.getInterface('os.monda.AuthenticationService15');
 
   const token = JSON.stringify({
     nick: 'SomeoneOnTheWeb',
@@ -26,8 +26,8 @@ async function start() {
   });
   await authService.authenticate(token);
 
-  const hostSessionObj = await bus.getProxyObject('re.frida.HostSession15', '/re/frida/HostSession');
-  const hostSession = hostSessionObj.getInterface('re.frida.HostSession15');
+  const hostSessionObj = await bus.getProxyObject('os.monda.HostSession15', '/os/monda/HostSession');
+  const hostSession = hostSessionObj.getInterface('os.monda.HostSession15');
 
   const processes: HostProcessInfo[] = await hostSession.enumerateProcesses({});
   console.log('Got processes:', processes);
@@ -41,11 +41,11 @@ async function start() {
 
   const sessionId: AgentSessionId = await hostSession.attach(pid, { 'persist-timeout': new Variant('u', 300) });
 
-  let agentSessionObj = await bus.getProxyObject('re.frida.AgentSession15', '/re/frida/AgentSession/' + sessionId[0]);
-  let agentSession = agentSessionObj.getInterface('re.frida.AgentSession15');
+  let agentSessionObj = await bus.getProxyObject('os.monda.AgentSession15', '/os/monda/AgentSession/' + sessionId[0]);
+  let agentSession = agentSessionObj.getInterface('os.monda.AgentSession15');
 
-  const sink = new MessageSink('re.frida.AgentMessageSink15');
-  bus.export('/re/frida/AgentMessageSink/' + sessionId[0], sink);
+  const sink = new MessageSink('os.monda.AgentMessageSink15');
+  bus.export('/os/monda/AgentMessageSink/' + sessionId[0], sink);
 
   const scriptId: AgentScriptId = await agentSession.createScript(`
 const _puts = new NativeFunction(Module.getExportByName(null, 'puts'), 'int', ['pointer']);
@@ -121,10 +121,10 @@ setInterval(() => {
       authMethods: [],
     });
 
-    const peerAgentSessionObj = await peerBus.getProxyObject('re.frida.AgentSession15', '/re/frida/AgentSession');
-    const peerAgentSession = peerAgentSessionObj.getInterface('re.frida.AgentSession15');
+    const peerAgentSessionObj = await peerBus.getProxyObject('os.monda.AgentSession15', '/os/monda/AgentSession');
+    const peerAgentSession = peerAgentSessionObj.getInterface('os.monda.AgentSession15');
 
-    peerBus.export('/re/frida/AgentMessageSink', sink);
+    peerBus.export('/os/monda/AgentMessageSink', sink);
 
     await agentSession.commitMigration();
 

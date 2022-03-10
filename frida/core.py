@@ -379,7 +379,7 @@ class Script(object):
             self._pending[request_id] = on_complete
 
         if not self.is_destroyed:
-            message = ['frida:rpc', request_id]
+            message = ['monda:rpc', request_id]
             message.extend(args)
             self.post(message)
 
@@ -439,7 +439,7 @@ class Script(object):
             level = message['level']
             text = payload
             self._log_handler(level, text)
-        elif mtype == 'send' and isinstance(payload, list) and len(payload) > 0 and payload[0] == 'frida:rpc':
+        elif mtype == 'send' and isinstance(payload, list) and len(payload) > 0 and payload[0] == 'monda:rpc':
             request_id = payload[1]
             operation = payload[2]
             params = payload[3:]
